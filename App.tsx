@@ -2,23 +2,29 @@ import {
   ConnectWallet,
   localWallet,
   metamaskWallet,
+  useAddress,
   rainbowWallet,
   ThirdwebProvider,
+  useConnect,
 } from '@thirdweb-dev/react-native';
+import { WalletConnect } from "@thirdweb-dev/wallets";
 import React from 'react';
 import {
   SafeAreaView,
   StyleSheet,
   Text,
   useColorScheme,
+  Image,
   View,
 } from 'react-native';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
+import NFT from './NFT';
 
+import { Mumbai } from "@thirdweb-dev/chains"
 const App = () => {
   return (
     <ThirdwebProvider
-      activeChain="mumbai"
+      activeChain={Mumbai}
       supportedWallets={[metamaskWallet(), rainbowWallet(), localWallet()]}>
       <AppInner />
     </ThirdwebProvider>
@@ -26,6 +32,14 @@ const App = () => {
 };
 
 const AppInner = () => {
+
+  const wallet = new WalletConnect(
+    {
+      chains: [Mumbai],
+    },
+  );
+  const address = wallet.connect();
+
   const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -39,8 +53,21 @@ const AppInner = () => {
   return (
     <SafeAreaView style={backgroundStyle}>
       <View style={styles.view}>
-        <Text style={textStyles}>React Native thirdweb starter</Text>
+        <Image
+          source={require('./logo.jpg')}
+          style={{ width: 100, height: 100, marginTop: -200, marginBottom: 30 }}
+
+        />
+        <Text style={textStyles}>Start Web3 From here</Text>
         <ConnectWallet />
+
+        {!address ? (
+          <Text style={styles.text}> Welcome!</Text>
+        ) : (
+          <NFT />
+        )
+
+        }
       </View>
     </SafeAreaView>
   );
